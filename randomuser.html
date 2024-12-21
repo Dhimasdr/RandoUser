@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random User Picker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #f8f9fa, #e9ecef);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        .name-box {
+            font-size: 2rem;
+            color: #495057;
+            background: #f1f3f5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            height: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-weight: bold;
+        }
+
+        .list-box {
+            text-align: left;
+            background: #f1f3f5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            height: 120px;
+            overflow-y: auto;
+            border: 1px solid #ced4da;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px 0 0 8px;
+            outline: none;
+        }
+
+        .input-group button {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #0d6efd;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .input-group button:hover {
+            background: #084298;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .button.start {
+            background: #0d6efd;
+        }
+
+        .button.stop {
+            background: #dc3545;
+        }
+
+        .button.start:hover {
+            background: #084298;
+        }
+
+        .button.stop:hover {
+            background: #a71d2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="name-box" id="nameBox">---</div>
+        <div class="list-box" id="userList"></div>
+        <div class="input-group">
+            <input type="text" id="userInput" placeholder="Enter user name">
+            <button onclick="addUser()">Add</button>
+        </div>
+        <div class="buttons">
+            <button class="button start" onclick="startPicking()">Start</button>
+            <button class="button stop" onclick="stopPicking()">Stop</button>
+        </div>
+    </div>
+
+    <script>
+        const names = [];
+        const winnerList = ["Anggun", "Aprinda", "Dhimas"]; // Predefined winner order
+        let currentWinnerIndex = 0; // Tracks the next winner
+        let intervalId;
+
+        function updateUserList() {
+            const userList = document.getElementById("userList");
+            userList.innerHTML = names.length
+                ? names.map(name => `<div>${name}</div>`).join("")
+                : "<div>No users added yet</div>";
+        }
+
+        function addUser() {
+            const userInput = document.getElementById("userInput");
+            const userName = userInput.value.trim();
+
+            if (userName) {
+                names.push(userName);
+                updateUserList();
+                userInput.value = ""; // Clear the input box
+            } else {
+                alert("Please enter a valid name!");
+            }
+        }
+
+        function startPicking() {
+            const nameBox = document.getElementById("nameBox");
+            if (names.length === 0) {
+                alert("Please add at least one user to start!");
+                return;
+            }
+            if (intervalId) clearInterval(intervalId);
+
+            intervalId = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * names.length);
+                nameBox.textContent = names[randomIndex];
+            }, 100); // Change the name every 100ms
+        }
+
+        function stopPicking() {
+            clearInterval(intervalId);
+            const nameBox = document.getElementById("nameBox");
+
+            if (currentWinnerIndex < winnerList.length) {
+                const winner = winnerList[currentWinnerIndex];
+                if (names.includes(winner)) {
+                    nameBox.textContent = winner; // Show the next winner
+                    currentWinnerIndex++; // Move to the next winner
+                } else {
+                    alert(`Winner "${winner}" is not in the list. Please add them.`);
+                }
+            } else {
+                alert("All winners have already been picked!");
+            }
+        }
+
+        // Initialize with an empty list
+        updateUserList();
+    </script>
+</body>
+</html>
